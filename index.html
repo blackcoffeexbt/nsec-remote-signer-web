@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 JSON Uploader</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .form-group { margin: 15px 0; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 80%; padding: 8px; margin: 5px 0; }
+        .section { margin: 30px 0; text-align: left; width: 80%; margin: 0 auto; }
+        .section h2 { font-size: 1.2em; color: #333; }
+        button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+        
+        /* New overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .overlay.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>ESP32 JSON Uploader</h1>
+    
+    <!-- Add overlay div -->
+    <div id="connectionOverlay" class="overlay">
+        <button onclick="connectESP32()">Connect to ESP32</button>
+    </div>
+    
+    <div class="section">
+        <h2>WiFi Configuration</h2>
+        <div class="form-group">
+            <label for="wifiSsid">WiFi SSID:</label>
+            <input type="text" id="wifiSsid" name="wifiSsid">
+        </div>
+        <div class="form-group">
+            <label for="wifiPassword">WiFi Password:</label>
+            <input type="password" id="wifiPassword" name="wifiPassword">
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Nostr Relay</h2>
+        <div class="form-group">
+            <label for="relayUri">Relay URI:</label>
+            <input type="text" id="relayUri" name="relayUri" placeholder="wss://relay.nostriot.com">
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Keys</h2>
+        <div class="form-group">
+            <label for="privateKey">Your Private Key:</label>
+            <input type="text" id="privateKey" name="privateKey" placeholder="64 character hex string">
+        </div>
+        <div class="form-group">
+            <label for="publicKey">Your Public Key:</label>
+            <input type="text" id="publicKey" name="publicKey" placeholder="64 character hex string">
+        </div>
+    </div>
+
+    <button onclick="sendData()">Upload Configuration</button>
+    <button onclick="loadConfig()">Load Configuration</button>
+    <p id="status"></p>
+
+    <script>
+        let port;
+        let writer;
+        let reader;
+
+        async function connectESP32() {
+            try {
+                port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 115200 });
+                writer = port.writable.getWriter();
+                reader = port.readable.getReader();
+                document.getElementById("status").innerText = "Connected to ESP32.";
+                // Hide the overlay after successful connection
+                document.getElementById("connectionOverlay").classList.add("hidden");
+            } catch (error) {
+                console.error("Error connecting to ESP32:", error);
+                document.getElementById("status").innerText = "Failed to connect. Try refreshing the page.";
+            }
+        }
+
+        async function sendData() {
+            if (!writer) {
+                document.getElementById("status").innerText = "ESP32 not connected.";
+                return;
+            }
+
+            // Add confirmation dialog
+            if (!confirm("Are you sure you want to upload these configuration values? This will overwrite any existing values you have saved to your device")) {
+                return;
+            }
+
+            const config = {
+                    ssid: document.getElementById("wifiSsid").value,
+                    password: document.getElementById("wifiPassword").value,
+                    relay_uri: document.getElementById("relayUri").value,
+                    private_key: document.getElementById("privateKey").value,
+                    public_key: document.getElementById("publicKey").value
+            };
+
+            const jsonData = JSON.stringify(config);
+            console.log(jsonData);
+            
+            try {
+                await writer.write(new TextEncoder().encode(jsonData + "\n"));
+                document.getElementById("status").innerText = "Configuration sent successfully!";
+            } catch (error) {
+                console.error("Error sending configuration:", error);
+                document.getElementById("status").innerText = "Error sending configuration.";
+            }
+        }
+
+        async function loadConfig() {
+            if (!reader) {
+                document.getElementById("status").innerText = "ESP32 not connected.";
+                return;
+            }
+
+            try {
+                // Send command to request configuration
+                await writer.write(new TextEncoder().encode("get_config\n"));
+                
+                // Read response
+                const response = await reader.read();
+                const jsonStr = new TextDecoder().decode(response.value);
+                console.log(jsonStr);
+                
+                if (isValidJson(jsonStr)) {
+                    const config = JSON.parse(jsonStr);
+                    
+                    // Populate form fields
+                    document.getElementById("wifiSsid").value = config.ssid || '';
+                    document.getElementById("wifiPassword").value = config.password || '';
+                    document.getElementById("relayUri").value = config.relay_uri || '';
+                    document.getElementById("privateKey").value = config.private_key || '';
+                    document.getElementById("publicKey").value = config.public_key || '';
+                    
+                    document.getElementById("status").innerText = "Configuration loaded successfully!";
+                } else {
+                    document.getElementById("status").innerText = "Invalid configuration data received.";
+                }
+            } catch (error) {
+                console.error("Error loading configuration:", error);
+                document.getElementById("status").innerText = "Error loading configuration.";
+            }
+        }
+
+        function isValidJson(str) {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
