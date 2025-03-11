@@ -13,9 +13,10 @@ A web application that allows you to configure a Remote Nostr Signer over USB.
 
 ## How to use
 
-1. Connect the Remote Nostr Signer to your computer via USB.
-2. Open the web application.
-3. Enter the Nostr signer's configuration values.
-4. Click the "Upload Configuration" button.
+1. Open the web application in a web browser at localhost:1234
+1. Connect the Remote Nostr Signer to your computer via USB whilst holding button 1 on the device.
+1. Click the "Connect" button.
+1. Enter the relevant values in the web application.
+1. Click the "Upload Configuration" button.
 
 
