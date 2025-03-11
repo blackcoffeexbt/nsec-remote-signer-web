@@ -65,7 +65,7 @@
         <h2 class="text-xl font-semibold text-gray-700 mb-4">Nostr Relay</h2>
         <div class="mb-4">
             <label for="relayUri" class="block font-semibold mb-2">Relay URI</label>
-            <input type="text" id="relayUri" name="relayUri" placeholder="wss://relay.damus.io"
+            <input type="text" id="relayUri" name="relayUri" placeholder="wss://relay.damus.io" value="wss://relay.damus.io"    
                 class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
     </div>
@@ -120,6 +120,10 @@
             class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
             Upload Configuration
         </button>
+        <button onclick="resetConfiguration()" 
+            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded">
+            Reset Configuration
+        </button>
     </div>
 
     <script>
@@ -133,7 +137,7 @@
                 await port.open({ baudRate: 115200 });
                 writer = port.writable.getWriter();
                 reader = port.readable.getReader();
-                document.getElementById("status").innerText = "Connected to ESP32.";
+                document.getElementById("status").innerText = "Connected to device.";
                 // Hide the connection overlay
                 document.getElementById("connectionOverlay").classList.add("hidden");
                 
@@ -147,7 +151,7 @@
                 document.getElementById("loadingSpinner").classList.add("hidden");
                 await loadConfig();
             } catch (error) {
-                console.error("Error connecting to ESP32:", error);
+                console.error("Error connecting to device:", error);
                 document.getElementById("status").innerText = "Failed to connect. Try refreshing the page and connecting again.";
             }
         }
@@ -287,6 +291,35 @@
             } else {
                 input.type = 'password';
                 icon.setAttribute('d', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z');
+            }
+        }
+
+        async function resetConfiguration() {
+            if (!writer) {
+                document.getElementById("status").innerText = "Device not connected. Try refreshing the page and connecting again.";
+                return;
+            }
+
+            // Add confirmation dialog
+            if (!confirm("WARNING: This will erase all configuration data from your device. Are you sure you want to continue?")) {
+                return;
+            }
+
+            try {
+                await writer.write(new TextEncoder().encode("reset_config\n"));
+                document.getElementById("status").innerText = "Configuration reset successfully!";
+                
+                // Clear all form fields
+                document.getElementById("wifiSsid").value = '';
+                document.getElementById("wifiPassword").value = '';
+                document.getElementById("relayUri").value = '';
+                document.getElementById("nsec").value = '';
+                document.getElementById("hexPrivateKey").value = '';
+                document.getElementById("npub").value = '';
+                document.getElementById("hexPublicKey").value = '';
+            } catch (error) {
+                console.error("Error resetting configuration:", error);
+                document.getElementById("status").innerText = "Error resetting configuration. Try refreshing the page and connecting again.";
             }
         }
     </script>
