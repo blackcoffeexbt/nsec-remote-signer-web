@@ -317,6 +317,9 @@
                 document.getElementById("hexPrivateKey").value = '';
                 document.getElementById("npub").value = '';
                 document.getElementById("hexPublicKey").value = '';
+
+                // Add success alert
+                alert("Configuration has been successfully reset!");
             } catch (error) {
                 console.error("Error resetting configuration:", error);
                 document.getElementById("status").innerText = "Error resetting configuration. Try refreshing the page and connecting again.";
