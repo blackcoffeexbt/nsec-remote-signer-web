@@ -9,10 +9,49 @@ window.updateDerivedKeys = updateDerivedKeys;
 window.togglePasswordVisibility = togglePasswordVisibility;
 window.handleModalConfirm = handleModalConfirm;
 window.closeAlertModal = closeAlertModal;
+window.validateAndSendData = validateAndSendData;
 
 let port;
 let writer;
 let reader;
+
+function validateAndSendData() {
+    // Get all required inputs
+    const requiredInputs = document.querySelectorAll('input[required]');
+    let isValid = true;
+    let firstInvalidInput = null;
+
+    // Check each required input
+    requiredInputs.forEach(input => {
+        if (!input.value.trim()) {
+            console.log("Input is empty:", input.id);
+            isValid = false;
+            input.classList.add('border-red-500', 'ring-2', 'ring-red-500');
+            if (!firstInvalidInput) {
+                firstInvalidInput = input;
+            }
+        } else {
+            input.classList.remove('border-red-500', 'ring-2', 'ring-red-500');
+        }
+    });
+
+    if (!isValid) {
+        // Show alert modal with error message
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = 'Please fill in all required fields';
+        document.getElementById('alertModal').classList.remove('hidden');
+        
+        // Scroll to and focus the first invalid input
+        if (firstInvalidInput) {
+            firstInvalidInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstInvalidInput.focus();
+        }
+        return;
+    }
+
+    // If validation passes, proceed with sending data
+    sendData();
+}
 
 async function connectESP32() {
     try {
@@ -94,7 +133,7 @@ async function sendData() {
 
     try {
         await writer.write(new TextEncoder().encode(jsonData + "\n"));
-        document.getElementById("status").innerText = "Configuration updated successfully!";
+        document.getElementById("status").innerText = "Configuration updated successfully! Restart the device to use the new configuration.";
     } catch (error) {
         console.error("Error sending configuration:", error);
         document.getElementById("status").innerText = "Error sending configuration. Try refreshing the page and connecting again.";

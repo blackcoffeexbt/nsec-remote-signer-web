@@ -77,7 +77,7 @@
                 <p class="text-gray-700 mb-4">To configure your device:</p>
                 <ol class="text-left text-gray-700 mb-6 space-y-2">
                     <li>1. Press and hold Button 1 while connecting your device</li>
-                    <li>2. Wait for the "Configuration mode" screen to appear</li>
+                    <li>2. Wait for the "Setup mode" screen to appear</li>
                     <li>3. Click the connect button below</li>
                 </ol>
                 <button onclick="connectESP32()" class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
@@ -104,12 +104,12 @@
                 </h2>
                 <div class="mb-4">
                     <label for="wifiSsid" class="block font-semibold mb-2">WiFi SSID</label>
-                    <input type="text" id="wifiSsid" name="wifiSsid" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="wifiSsid" name="wifiSsid" required="" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label for="wifiPassword" class="block font-semibold mb-2">WiFi Password</label>
                     <div class="relative">
-                        <input type="password" id="wifiPassword" name="wifiPassword" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="password" required="" id="wifiPassword" name="wifiPassword" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <button type="button" onclick="togglePasswordVisibility('wifiPassword')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path id="wifiPasswordToggleIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -131,7 +131,7 @@
                     <label for="relayUri" class="block font-semibold mb-2">Relay URI</label>
                     <div class="flex items-center">
                         <span class="bg-gray-100 p-2 border rounded-l border-r-0 text-gray-600">wss://</span>
-                        <input type="text" id="relayUri" name="relayUri" placeholder="relay.damus.io" value="relay.damus.io" class="w-full p-2 border rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="relayUri" required="" name="relayUri" placeholder="relay.damus.io" value="relay.damus.io" class="w-full p-2 border rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
             </div>
@@ -147,7 +147,7 @@
                 <div class="mb-4">
                     <label for="nsec" class="block font-semibold mb-2">Your Nsec</label>
                     <div class="relative">
-                        <input type="password" id="nsec" name="nsec" placeholder="nsec......." class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="updateDerivedKeys(this.value)">
+                        <input type="password" id="nsec" required="" name="nsec" placeholder="nsec......." class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="updateDerivedKeys(this.value)">
                         <button type="button" onclick="togglePasswordVisibility('nsec')" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path id="nsecToggleIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -181,7 +181,7 @@
 
         <!-- Updated action buttons -->
         <div class="space-x-4 mt-8">
-            <button onclick="sendData()" class="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
+            <button onclick="validateAndSendData()" class="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
                 Upload Configuration
             </button>
             <button onclick="resetConfiguration()" class="bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
