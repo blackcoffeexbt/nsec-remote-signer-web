@@ -126,6 +126,38 @@
         </button>
     </div>
 
+    <!-- Add Modal Components before the script tag -->
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4" id="confirmationMessageTitle"></h3>
+            <div id="confirmationMessageContent"></div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="handleModalConfirm(false)" 
+                    class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">
+                    Cancel
+                </button>
+                <button onclick="handleModalConfirm(true)" 
+                    class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4" id="alertMessage"></h3>
+            <div class="flex justify-end">
+                <button onclick="closeAlertModal()" 
+                    class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let port;
         let writer;
@@ -156,16 +188,47 @@
             }
         }
 
+        // Add these new modal-related functions
+        let modalResolve = null;
+
+        function showConfirmationModal(title, message) {
+            document.getElementById('confirmationMessageTitle').innerHTML = title;
+            document.getElementById('confirmationMessageContent').innerHTML = message;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+            return new Promise(resolve => {
+                modalResolve = resolve;
+            });
+        }
+
+        function handleModalConfirm(confirmed) {
+            document.getElementById('confirmationModal').classList.add('hidden');
+            if (modalResolve) {
+                modalResolve(confirmed);
+                modalResolve = null;
+            }
+        }
+
+        function showAlertModal(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('alertModal').classList.remove('hidden');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.add('hidden');
+        }
+
         async function sendData() {
             if (!writer) {
                 document.getElementById("status").innerText = "Device not connected. Try refreshing the page and connecting again.";
                 return;
             }
 
-            // Add confirmation dialog
-            if (!confirm("Are you sure you want to upload these configuration values? This will overwrite any existing values you have saved to your device")) {
-                return;
-            }
+            const confirmed = await showConfirmationModal(
+                "Upload Configuration",
+                "Are you sure you want to upload these configuration values? This will overwrite any existing values you have saved to your device"
+            );
+            
+            if (!confirmed) return;
 
             const config = {
                     ssid: document.getElementById("wifiSsid").value,
@@ -300,10 +363,12 @@
                 return;
             }
 
-            // Add confirmation dialog
-            if (!confirm("WARNING: This will erase all configuration data from your device. Are you sure you want to continue?")) {
-                return;
-            }
+            const confirmed = await showConfirmationModal(
+                "WARNING",
+                "This will erase all configuration data from your device. Are you sure you want to continue?"
+            );
+            
+            if (!confirmed) return;
 
             try {
                 await writer.write(new TextEncoder().encode("reset_config\n"));
@@ -318,8 +383,7 @@
                 document.getElementById("npub").value = '';
                 document.getElementById("hexPublicKey").value = '';
 
-                // Add success alert
-                alert("Configuration has been successfully reset!");
+                showAlertModal("Configuration has been successfully reset!");
             } catch (error) {
                 console.error("Error resetting configuration:", error);
                 document.getElementById("status").innerText = "Error resetting configuration. Try refreshing the page and connecting again.";
