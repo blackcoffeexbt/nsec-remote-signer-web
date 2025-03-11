@@ -2,7 +2,6 @@
   "name": "remote-signer-configurator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel index.html",
@@ -12,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@noble/hashes": "^1.7.1",
     "nostr-tools": "^2.10.4"
   },
   "devDependencies": {
-    "parcel": "^2.13.3"
+    "parcel": "^2.13.3",
+    "svgo": "^3.3.2"
   }
 }
