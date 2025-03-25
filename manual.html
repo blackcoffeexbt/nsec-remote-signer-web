@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSec Remote Signer Manual</title>
+    <!-- Add Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add custom gradient background and animations -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f8ff 0%, #ffffff 100%);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="p-5 font-sans min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg rounded-lg mb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex space-x-8">
+                        <a href="index.html" class="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                            Home
+                        </a>
+                        <a href="manual.html" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-gray-900">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            User Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+            NSec Remote Signer User Guide
+        </h1>
+
+        <!-- Main content sections -->
+        <div class="space-y-8">
+            <!-- Getting Started Section -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Getting Started</h2>
+                <p class="text-gray-600 mb-4">
+                    The NSec Remote Signer is a remote signer for Nostr.
+                    It stores your private keys on the device and allows you to use Nostr clients without exposing your private keys to your computer or other devices.
+                </p>
+                <!-- Add more content here -->
+            </div>
+
+            <!-- Device Setup Section -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Device Setup</h2>
+                <ol class="list-decimal list-inside space-y-4 text-gray-600">
+                    <li>Your device will be shipped with firmware installed. You will need to connect it to your computer and enter setup mode to configure it.</li>
+                    <li>Hold button 1 while connecting to your computer with a USB cable</li>
+                    <li>Use the configuration tool on this website to configure your device</li>
+                     <li>Enter the following information:
+                        <ul>
+                            <li>WiFi SSID and password</li>
+                            <li>Nostr private key</li>
+                            <li>Relay URL</li>
+                        </ul>
+                     </li>
+                     <li>Click the "Save" button to save the configuration</li>
+                     <li>You should see a message indicating that the device is configured</li>
+                     <li>You can now use your device to sign messages</li>
+                </ol>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Usage</h2>
+                <p class="text-gray-600 mb-4">
+                    Only button 1 is currently supported. Press and hold it to display a pairing QR code. Scan the QR code with your nostr client to pair with the device.
+                </p>
+            </div>
+
+            
+    </div>
+</body>
+</html> 
