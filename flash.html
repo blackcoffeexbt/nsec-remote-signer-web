@@ -35,7 +35,7 @@
         }
     </style>
 </head>
-<body class="p-5 font-sans text-center min-h-screen">
+<body class="p-5 font-sans min-h-screen">
     <nav class="bg-white shadow-lg rounded-lg mb-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
@@ -59,7 +59,7 @@
         </div>
     </nav>
 
-    <h1 class="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+    <h1 class="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text text-center ">
         NSec Remote Signer Firmware Update
     </h1>
 
@@ -109,6 +109,7 @@
 
         <!-- ESP Web Install Button -->
         <esp-web-install-button 
+            id="installButton"
             manifest="./static/manifest.json"
             class="inline-block"
             install-button-text="Install Firmware"
