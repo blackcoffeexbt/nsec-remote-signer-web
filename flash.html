@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSec Remote Signer Firmware Flasher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        // Import the web component directly
+        import 'esp-web-tools/dist/web/install-button.js';
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f8ff 0%, #ffffff 100%);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Add progress bar styling */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="p-5 font-sans text-center min-h-screen">
+    <nav class="bg-white shadow-lg rounded-lg mb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex space-x-8">
+                        <a href="index.html" class="inline-flex items-center px-1 pt-1 text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                            Home
+                        </a>
+                        <a href="flash.html" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-gray-900">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Firmware Update
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="text-4xl font-bold mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+        NSec Remote Signer Firmware Update
+    </h1>
+
+    <div class="max-w-2xl mx-auto mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-yellow-700">
+                    This firmware flasher requires <span class="font-semibold">Google Chrome</span>, a <span class="font-semibold">Chromium browser</span> or <span class="font-semibold">Microsoft Edge</span> on desktop Windows, macOS, or Linux for Web Serial support.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Flash Instructions</h2>
+        <ol class="text-left text-gray-700 mb-6 space-y-2">
+            <li>1. Connect your NSec Remote Signer device to your computer via USB</li>
+            <li>2. Press and hold Button 1 while clicking the "Install" button below</li>
+            <li>3. Release Button 1 when the flashing process begins</li>
+            <li>4. Wait for the process to complete</li>
+        </ol>
+
+        <!-- Add status dialog -->
+        <div id="statusDialog" class="mb-6 hidden">
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                <h3 class="font-semibold text-gray-700 mb-2">Flash Status</h3>
+                <div id="statusMessage" class="text-sm text-gray-600 mb-3">Waiting to connect...</div>
+                
+                <!-- Progress bar -->
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress-bar-fill" style="width: 0%"></div>
+                </div>
+                
+                <!-- Detailed status -->
+                <div id="detailedStatus" class="mt-3 text-left">
+                    <div id="portInfo" class="text-sm text-gray-500"></div>
+                    <div id="deviceInfo" class="text-sm text-gray-500"></div>
+                    <div id="flashInfo" class="text-sm text-gray-500"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESP Web Install Button -->
+        <esp-web-install-button 
+            manifest="./static/manifest.json"
+            class="inline-block"
+            install-button-text="Install Firmware"
+            install-button-class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
+            <button slot="activate" class="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transform transition hover:scale-105">
+                Install Firmware
+            </button>
+            <span slot="not-allowed">
+                Sorry, this browser is not supported. Please use Chrome, Edge, or another Chromium-based browser.
+            </span>
+            <span slot="error">
+                Failed to flash. Please disconnect, hold Button 1, and try again.
+            </span>
+        </esp-web-install-button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const installButton = document.querySelector('esp-web-install-button');
+            const statusDialog = document.getElementById('statusDialog');
+            const statusMessage = document.getElementById('statusMessage');
+            const progressBar = document.getElementById('progressBar');
+            const portInfo = document.getElementById('portInfo');
+            const deviceInfo = document.getElementById('deviceInfo');
+            const flashInfo = document.getElementById('flashInfo');
+
+            installButton.addEventListener('state-changed', (e) => {
+                statusDialog.classList.remove('hidden');
+                
+                switch (e.detail) {
+                    case 'connecting':
+                        statusMessage.textContent = 'Connecting to device...';
+                        break;
+                    case 'connected':
+                        statusMessage.textContent = 'Connected! Preparing to flash...';
+                        break;
+                    case 'installing':
+                        statusMessage.textContent = 'Installing firmware...';
+                        break;
+                    case 'finished':
+                        statusMessage.textContent = 'Installation complete! You can disconnect your device.';
+                        progressBar.style.width = '100%';
+                        break;
+                    case 'error':
+                        statusMessage.textContent = 'Error occurred during installation';
+                        statusMessage.classList.add('text-red-600');
+                        break;
+                }
+            });
+
+            installButton.addEventListener('progress', (e) => {
+                const percentage = Math.round(e.detail * 100);
+                progressBar.style.width = `${percentage}%`;
+                flashInfo.textContent = `Flash progress: ${percentage}%`;
+            });
+
+            installButton.addEventListener('device-connected', (e) => {
+                const device = e.detail;
+                deviceInfo.textContent = `Device: ${device.manufacturerName || 'Unknown'} ${device.productName || 'Device'}`;
+            });
+
+            installButton.addEventListener('port-selected', (e) => {
+                const port = e.detail;
+                portInfo.textContent = `Port: ${port.productName || 'Unknown'} (${port.vendorId}:${port.productId})`;
+            });
+
+            // Add error handling for port already open
+            installButton.addEventListener('error', (e) => {
+                console.log('Error occurred:', e.detail);
+                // If port is already open, suggest refreshing
+                if (e.detail.message && e.detail.message.includes('already open')) {
+                    alert('Please refresh the page and try again. If the error persists, disconnect and reconnect your device.');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

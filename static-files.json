@@ -1,0 +1,6 @@
+{
+  "staticFiles": {
+    "staticPath": "static",
+    "staticOutPath": "static"
+  }
+} 
