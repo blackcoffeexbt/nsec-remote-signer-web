@@ -20,3 +20,9 @@ A web application that allows you to configure a Remote Nostr Signer over USB.
 1. Click the "Upload Configuration" button.
 
 
+## Notes for release binaries
+
+1. Compile the binaries from the pio project.
+2. Copy the binaries to the `public/static` directory.
+3. Update the `version` in the `manifest.json` file.
+4. Deploy
